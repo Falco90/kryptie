@@ -9,11 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@magic-ext/evm": "^1.5.1",
+    "@particle-network/universal-account-sdk": "^2.0.0-beta.3",
     "@types/node": "26.0.1",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.9",
+    "ethers": "^6.17.0",
+    "magic-sdk": "^33.7.1",
     "next": "^13.4.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
