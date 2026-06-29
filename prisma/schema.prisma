@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  magicIssuer   String   @unique
+  email         String?
+  walletAddress String?
+  paymentRequests PaymentRequest[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PaymentRequest {
+  id           String   @id @default(cuid())
+  publicId     String   @unique
+  creatorId    String
+  creator      User     @relation(fields: [creatorId], references: [id])
+  amount       String
+  tokenAddress String
+  tokenSymbol  String
+  decimals     Int
+  chainId      Int
+  title        String?
+  description  String?
+  status       String   @default("pending")
+  expiresAt    DateTime?
+  payments     Payment[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([creatorId])
+  @@index([status])
+  @@index([publicId])
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  paymentRequestId String
+  paymentRequest   PaymentRequest @relation(fields: [paymentRequestId], references: [id])
+  payerAddress    String
+  txHash          String   @unique
+  amount          String
+  chainId         Int?
+  createdAt       DateTime @default(now())
+  @@index([paymentRequestId])
+  @@index([payerAddress])
+}
