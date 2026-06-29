@@ -1,11 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { withAuth } from '@/server/withAuth';
 import { prisma } from '@/lib/prisma';
 
 function generatePublicId() {
-  return `pr_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+  return `pr_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-export default async function handler(
+export default withAuth(async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -14,8 +15,9 @@ export default async function handler(
   }
 
   try {
+    const user = (req as any).user;
+
     const {
-      email,
       amount,
       tokenAddress,
       tokenSymbol,
@@ -26,20 +28,17 @@ export default async function handler(
       expiresAt,
     } = req.body;
 
-    if (!email || !amount || !tokenAddress || !tokenSymbol || !chainId) {
+    if (!amount || !tokenAddress || !tokenSymbol || !chainId) {
       return res.status(400).json({
         error: 'Missing required fields',
       });
     }
 
-    const user = await prisma.user.upsert({
-      where: { email },
-      update: {},
-      create: {
-        email,
-        magicIssuer: email,
-      },
-    });
+    if (!user.walletAddress) {
+      return res.status(400).json({
+        error: 'User must have a wallet connected',
+      });
+    }
 
     const paymentRequest = await prisma.paymentRequest.create({
       data: {
@@ -74,4 +73,4 @@ export default async function handler(
       details: err.message,
     });
   }
-}
+});

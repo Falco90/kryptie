@@ -1,52 +1,38 @@
-import type { NextApiRequest } from "next";
-import magicAdmin from "@/server/magic";
-import { prisma } from "@/server/prisma";
+import type { NextApiRequest } from 'next';
+import magic from '@/server/magic';
+import { prisma } from '@/lib/prisma';
 
-export async function requireUser(req: NextApiRequest) {
-  const didToken = extractDidToken(req);
+export async function getUserFromRequest(req: NextApiRequest) {
+  try {
+    const token =
+      req.headers.authorization?.replace('Bearer ', '');
 
-  if (!didToken) {
-    throw new Error("Missing Authorization token");
+    if (!token) {
+      throw new Error('Missing auth token');
+    }
+
+    const metadata = await magic.users.getMetadataByToken(token);
+
+    if (!metadata.email) {
+      throw new Error('Invalid token');
+    }
+
+    let user = await prisma.user.findUnique({
+      where: { email: metadata.email },
+    });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email: metadata.email,
+          magicIssuer: metadata.issuer!,
+          walletAddress: metadata.publicAddress!
+        },
+      });
+    }
+
+    return user;
+  } catch (err) {
+    return null;
   }
-
-  await magicAdmin.token.validate(didToken);
-
-  const metadata = await magicAdmin.users.getMetadataByToken(didToken);
-
-  if (!metadata.issuer) {
-    throw new Error("Invalid Magic user metadata");
-  }
-
-  const user = await prisma.user.upsert({
-    where: {
-      magicIssuer: metadata.issuer,
-    },
-    update: {
-      email: metadata.email ?? undefined,
-      walletAddress: metadata.publicAddress ?? undefined,
-    },
-    create: {
-      magicIssuer: metadata.issuer,
-      email: metadata.email ?? null,
-      walletAddress: metadata.publicAddress ?? null,
-    },
-  });
-
-  return user;
-}
-
-function extractDidToken(req: NextApiRequest): string | null {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader) return null;
-
-  const parts = authHeader.split(" ");
-
-  if (parts.length !== 2) return null;
-
-  const [type, token] = parts;
-
-  if (type !== "Bearer") return null;
-
-  return token;
 }
