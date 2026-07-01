@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react'
 import Login from '@/components/magic/Login'
-import MagicProvider from '@/hooks/MagicProvider'
-import { UniversalAccountProvider } from '@/hooks/UniversalAccountProvider'
-import { ToastContainer } from 'react-toastify'
 import PaymentPage from '@/components/PaymentPage'
 
 export default function Home() {
@@ -13,10 +10,9 @@ export default function Home() {
   }, [setToken]);
 
   return (
-    <MagicProvider>
-      <UniversalAccountProvider>
-        <ToastContainer />
-        {process.env.NEXT_PUBLIC_MAGIC_API_KEY ? (
+    <main>
+      {
+        process.env.NEXT_PUBLIC_MAGIC_API_KEY ? (
           token.length > 0 ? (
             <PaymentPage token={token} setToken={setToken} />
           ) : (
@@ -24,8 +20,8 @@ export default function Home() {
           )
         ) : (
           <p>dashboard redirect</p>
-        )}
-      </UniversalAccountProvider>
-    </MagicProvider>
+        )
+      }
+    </main>
   )
 }
