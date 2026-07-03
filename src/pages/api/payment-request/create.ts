@@ -16,6 +16,7 @@ export default withAuth(async function handler(
 
   try {
     const user = (req as any).user;
+    console.log(req);
 
     const {
       amount,

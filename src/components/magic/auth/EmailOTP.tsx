@@ -57,15 +57,11 @@ const EmailOTP = ({ token, setToken }: LoginProps) => {
 
   return (
     <div className="space-y-5">
-
-      {/* Subtle helper text (no big header anymore) */}
       <div className="space-y-1">
         <p className="text-sm text-muted-foreground">
           Enter your email to receive a secure login code
         </p>
       </div>
-
-      {/* Input */}
       <div className="space-y-2">
         <Input
           type="email"
@@ -78,15 +74,12 @@ const EmailOTP = ({ token, setToken }: LoginProps) => {
             setEmail(e.target.value);
           }}
         />
-
         {emailError && (
           <p className="text-sm text-destructive">
             Please enter a valid email address
           </p>
         )}
       </div>
-
-      {/* Button */}
       <Button
         className="w-full h-11 font-medium"
         disabled={
@@ -97,8 +90,6 @@ const EmailOTP = ({ token, setToken }: LoginProps) => {
       >
         {isLoginInProgress ? "Sending code..." : "Continue with email"}
       </Button>
-
-      {/* Footer hint */}
       <p className="text-xs text-muted-foreground text-center leading-relaxed">
         By continuing, you agree to receive a one-time login code from Kryptie.
       </p>

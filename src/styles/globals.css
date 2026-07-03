@@ -71,11 +71,26 @@
     --ring: 217.2 91.2% 60%;
   }
 
+  html {
+      font-family: var(--font-sans);
+    }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
 
   * {
     @apply border-border;
   }
 }
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type='number'] {
+        -moz-appearance: textfield;
+      }
+    

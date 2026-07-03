@@ -7,11 +7,12 @@ import { Inter } from 'next/font/google'
 
 const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-sans"
 });
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <div className={inter.className}>
+    <div className={`${inter.variable} font-sans`}>
       <MagicProvider>
         <UniversalAccountProvider>
           <ToastContainer />
